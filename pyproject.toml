@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "oenv"
 version = "0.0.2"
 authors = [
-  { name="Felix Coca", email="daniel.uremix@gmail.com" },
+  { name="drkpkg", email="daniel.uremix@gmail.com" },
 ]
 description = "A simple package to manage environment variables for Odoo, based on the idea of dotenv libraries."
 readme = "README.md"
