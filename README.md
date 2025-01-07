@@ -1,3 +1,3 @@
-# odoo-env
+# OENV
 
 Odoo environment
