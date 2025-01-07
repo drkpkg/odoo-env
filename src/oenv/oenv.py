@@ -3,29 +3,48 @@ import requests
 import zipfile
 import json
 
-ODOO_VERSIONS = (("15.0", "3.8"), ("16.0", "3.9"), ("17.0", "3.10"), ("master", "3.11"))
+ODOO_VERSIONS = (
+    ("15.0", "3.8"),
+    ("16.0", "3.10"),
+    ("17.0", "3.10"),
+    ("18.0", "3.11"),
+    ("master", "3.11"),
+)
 
-def create_python_version_file():
-    python_version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".python-version")
-    python_version = "3.7"
+
+def create_python_version_file(version="3.8"):
+    python_version_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".python-version"
+    )
+    python_version = version
     with open(python_version_file, "w") as file:
         file.write(python_version)
 
+
 def get_python_version():
-    python_version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".python-version")
+    python_version_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".python-version"
+    )
     with open(python_version_file, "r") as file:
         return file.read().strip()
 
+
 def create_odoo_version_file(version="master"):
-    odoo_version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".odoo-version")
+    odoo_version_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".odoo-version"
+    )
     odoo_version = version
     with open(odoo_version_file, "w") as file:
         file.write(odoo_version)
 
+
 def get_odoo_version():
-    odoo_version_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".odoo-version")
+    odoo_version_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".odoo-version"
+    )
     with open(odoo_version_file, "r") as file:
         return file.read().strip()
+
 
 def remove_directory(path):
     if os.path.exists(path):
@@ -36,13 +55,18 @@ def remove_directory(path):
                 remove_directory(os.path.join(root, dir))
         os.rmdir(path)
 
+
 def remove_virtualenv():
-    virtualenv_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".venv")
+    virtualenv_directory = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".venv"
+    )
     remove_directory(virtualenv_directory)
+
 
 def remove_odoo_directory():
     odoo_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "odoo")
     remove_directory(odoo_directory)
+
 
 def restore_virtualenv():
     python_version = get_python_version()
@@ -51,16 +75,20 @@ def restore_virtualenv():
     os.system(f"pyenv local {python_version}")
     os.system(f"python -m venv .venv")
 
+
 def delete_directory(directory):
     if os.path.exists(directory):
         remove_directory(directory)
+
 
 def download_odoo():
     odoo_version = get_odoo_version()
     odoo_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "odoo")
     delete_directory(odoo_directory)
     odoo_url = f"https://github.com/odoo/odoo/archive/refs/heads/{odoo_version}.zip"
-    odoo_zip = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"odoo-{odoo_version}.zip")  
+    odoo_zip = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), f"odoo-{odoo_version}.zip"
+    )
     download_percentage = 0
     total_percentage = 0
     with open(odoo_zip, "wb") as file:
@@ -69,10 +97,12 @@ def download_odoo():
             file.write(data)
             download_percentage += len(data)
             total_percentage = download_percentage / 1024 / 1024
-            sys.stdout.write(f"\rDownloading Odoo {odoo_version}: {total_percentage:.2f} MB")
+            sys.stdout.write(
+                f"\rDownloading Odoo {odoo_version}: {total_percentage:.2f} MB"
+            )
             sys.stdout.flush()
     print("\n")
-            
+
     try:
         with zipfile.ZipFile(odoo_zip, "r") as zip_ref:
             zip_ref.extractall(odoo_directory)
@@ -86,7 +116,8 @@ def download_odoo():
     except Exception as e:
         sys.stdout.write(f"Error: {e}\n")
         exit(1)
-    
+
+
 def restore_odoo():
     odoo_version = get_odoo_version()
     odoo_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "odoo")
@@ -105,13 +136,41 @@ def odoo_version_list():
         odoo_versions.append(version)
     return odoo_versions
 
+
+def get_python_odoo_version(odoo_version):
+    """
+    Returns the python version for the given Odoo version.
+    """
+    for version, python_version in ODOO_VERSIONS:
+        if version == odoo_version:
+            return python_version
+    return None
+
+
+def check_pyenv():
+    """
+    Check if pyenv is installed.
+    """
+    if not os.path.exists(os.path.expanduser("~/.pyenv")):
+        sys.stdout.write("Error: pyenv is not installed\n")
+        exit(1)
+
+
 def main():
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--restore", action="store_true", help="Restore Odoo and Virtualenv")
-    arg_parser.add_argument("--download", action="store_true", help="Download Odoo")
-    arg_parser.add_argument("--list", action="store_true", help="List available Odoo versions")
-    # init v15.0
-    arg_parser.add_argument("init", nargs="?", help="Initialize Odoo version")
+    arg_parser = argparse.ArgumentParser(
+        usage="%(prog)s [options]",
+        description="Odoo Environment Manager",
+    )
+    arg_parser.add_argument(
+        "-r", "--restore", action="store_true", help="Restore Odoo and Virtualenv"
+    )
+    arg_parser.add_argument(
+        "-d", "--download", action="store_true", help="Download Odoo"
+    )
+    arg_parser.add_argument(
+        "-l", "--list", action="store_true", help="List available Odoo versions"
+    )
+    arg_parser.add_argument("-i", "--init", nargs="*", help="Initialize Odoo version")
     args = arg_parser.parse_args()
     if args.restore:
         restore_virtualenv()
@@ -121,13 +180,14 @@ def main():
     if args.list:
         print("\n".join(odoo_version_list()))
     if args.init:
-        odoo_version_arg = args.init
+        odoo_version_arg = args.init[0]
+        check_pyenv()
         create_odoo_version_file(odoo_version_arg)
-        create_python_version_file()
+        create_python_version_file(get_python_odoo_version(odoo_version_arg))
         restore_virtualenv()
         download_odoo()
         restore_odoo()
-    
+
+
 if __name__ == "__main__":
     main()
-

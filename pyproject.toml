@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oenv"
+version = "0.0.1"
+authors = [
+  { name="Felix Coca", email="daniel.uremix@gmail.com" },
+]
+description = "A simple package to manage environment variables for Odoo, based on the idea of dotenv libraries."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/drkpkg/oenv"
+Issues = "https://github.com/drkpkg/oenv/issues"

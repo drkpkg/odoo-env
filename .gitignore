@@ -1,0 +1,5 @@
+dist
+.venv
+.vscode
+.idea
+*.pyc

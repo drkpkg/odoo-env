@@ -4,11 +4,35 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        
         {
             "type": "debugpy",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/oenv.py"
+            "name": "Debug help",
+            "program": "${workspaceFolder}/oenv.py",
+            "args": [
+                "--help"
+            ],
+        },
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Debug init",
+            "program": "${workspaceFolder}/oenv.py",
+            "args": [
+                "--init",
+                "15.0"
+            ],
         }
+        {
+            "type": "debugpy",
+            "request": "launch",
+            "name": "Debug restore",
+            "program": "${workspaceFolder}/oenv.py",
+            "args": [
+                "--restore"
+            ],
+        },
     ]
 }
